@@ -1,0 +1,104 @@
+name,type
+Pork,meat
+Lamb,meat
+Bacon,meat
+Fried lamb,meat
+Baked fish,meat
+Crumbled fish,meat
+Mince,meat
+Smoked fish,meat
+Beef,meat
+Chicken,meat
+Sausages,meat
+Meat patties,meat
+Meat loaf,meat
+Silverside,meat
+Ham,meat
+Salami,meat
+Veal,meat
+Steak,meat
+Potato,vegetable
+Cabbage,vegetable
+Carrots,vegetable
+Broccoli,vegetable
+Beans,vegetable
+Onion,vegetable
+Cauliflower,vegetable
+Kumara,vegetable
+Peas,vegetable
+Asian Stir Fry,vegetable
+Pumpkin,vegetable
+Mixed Vegies,vegetable
+Stir Fry,vegetable
+Spinach,vegetable
+Lentils,vegetable
+Courgettes,vegetable
+Mushrooms,vegetable
+Parsnips,vegetable
+Corn,vegetable
+Rice,vegetable
+Potato (mashed),vegetable
+Potato (roasted),vegetable
+Potato (gourmet),vegetable
+Cauliflower Cheese,vegetable
+Carrots and Parsnips,vegetable
+Silverbeet,vegetable
+Scalloped Vegetables,vegetable
+Asian Stir Fry,vegetable
+Wedges,vegetable
+Roast Pumpkin,vegetable
+Mashed Potatoes,vegetable
+Potatoes (creamed),vegetable
+Kumara (Roasted),vegetable
+Apple,fruit
+Peach,fruit
+Tomato,fruit
+Blueberry,fruit
+Coconut,fruit
+Oranges,fruit
+Apricot,fruit
+Banana,fruit
+Strawberry,fruit
+Avocado,fruit
+Boysenberry,fruit
+Mango,fruit
+Pineapple,fruit
+Cucumber,fruit
+Grape,fruit
+Kiwifruit,fruit
+Pear,fruit
+Olive,fruit
+Melon,fruit
+Peas,fruit
+Cream Cheese,sandwich
+Cheese,sandwich
+Tomato,sandwich
+Fish,sandwich
+Meat,sandwich
+Pork and ham,sandwich
+Ham,sandwich
+Bagel toast,sandwich
+Cheese and pickle,sandwich
+Chicken,sandwich
+Salad,sandwich
+Deli,sandwich
+Ham and egg,sandwich
+Jam,sandwich
+Marmite,sandwich
+Peanut butter,sandwich
+Toast,sandwich
+Cream,dessert
+Bread,dessert
+Chocolate cake,dessert
+Banana cake,dessert
+Apple crumble,dessert
+Gingerbread,dessert
+Sponge,dessert
+Brownie,dessert
+Butter,dessert
+Muffin,dessert
+Lamington,dessert
+Custard,dessert
+Afghan biscuit,dessert
+Anzac biscuit,dessert
+Banana bread,dessert
