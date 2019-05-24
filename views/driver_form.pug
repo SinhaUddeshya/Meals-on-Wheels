@@ -1,0 +1,47 @@
+- var driverTypes = ["Staff","Volunteer"];
+
+if (driver)
+    h1= "Edit driver #" + driver[0].id
+    div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+    input(type="hidden" name="id" value=driver[0].id)
+        
+div.row
+    div.two.columns
+        label(for="driverNumberInput") Driver number
+        input#driverNumberInput.u-full-width(type="text" name="driverNumber" required value=driver ? driver[0].driverNumber : "")
+
+    div.three.columns
+        label(for="lastNameInput") Last name
+        input#lastNameInput.u-full-width(type="text" name="lastName" required value=driver ? driver[0].lastName : "")
+        
+    div.three.columns
+        label(for="firstNameInput") First name
+        input#firstNameInput.u-full-width(type="text" name="firstName" required value=driver ? driver[0].firstName : "")
+
+    div.four.columns
+        label(for="typeSelect") Type
+        select#typeSelect.u-full-width(name="type" required)
+            for type, index in driverTypes
+                option(value=type selected=driver && driver[0].type ? driver[0].type.indexOf(type) != -1 : false)= type
+
+div.row
+    div.six.columns
+        label(for="phone_numberInput") Phone number
+        input#phone_numberInput.u-full-width(type="text" name="phone_number" required value=driver ? driver[0].phone_number : "")
+
+    div.six.columns
+        label(for="emailInput") Email
+        input(class="u-full-width" type="email" id="emailInput" name="email" value=driver ? driver[0].email : "")
+div.row
+    div.twelve.columns
+        label(for="addressInput") Address
+        input#addressInput.u-full-width(type="text" name="address" required value=driver ? driver[0].address : "")
+div.row
+    div.twelve.columns
+        label(for="notesInput") Notes
+        textarea#notesInput.u-full-width(name="notes")= driver ? driver[0].notes : ""
+div.row
+    div.twelve.columns
+        input(type="submit")
+        if (driver)
+            button.cancel(type="button") Cancel

@@ -1,0 +1,60 @@
+extends layout
+
+block content
+
+  //- Mixing for a column
+  mixin column(type)
+    div(class="two columns")
+      - var uppercase = type.charAt(0).toUpperCase() + type.slice(1);
+      h5= uppercase
+      button(id="show"+uppercase data-type=uppercase).button-primary.showForm Add new
+      div.row
+        div(id= "addNew" + uppercase style="display:none").twelve.columns
+
+          form(id="new"+uppercase+"Form" action="/settings/ingredient/new" method="POST")
+            input(type="hidden" name="type" value=type)
+            div.row
+              div.twelve.columns
+                label(for=type + "NameInput") Name
+                input(id=type + "NameInput").u-full-width(type="text" name="name" required)
+              div.row
+                div.twelve.columns
+                  input(type="submit")
+
+      div.row
+        div.twelve.columns
+          table.u-full-width
+            for ingredient in ingredient_list
+              if ingredient.type == type
+                tr
+                  td= ingredient.name
+                  td 
+                    a(href= "/settings/delete/" + ingredient.id)
+                      i.fas.fa-trash-alt
+
+
+  div(class="container")
+    div(class="row")
+      +column("meat")
+      +column("vegetable")
+      +column("fruit")
+      +column("sandwich")
+      +column("dessert")
+      +column("soup")
+
+
+  script(type="text/javascript").
+
+    $(function() {
+
+      $(".showForm").on("click", function () {
+        var self = $(this);
+        var type = self.data("type");
+        var $addNewForm = $("#addNew"+type);
+        if ($addNewForm.is(":hidden"))
+          $addNewForm.slideDown();
+        else
+          $addNewForm.slideUp();
+      });
+
+    });

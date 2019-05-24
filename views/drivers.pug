@@ -1,0 +1,102 @@
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.twelve.columns
+        button#showForm.button-primary Add new
+        if (inactive_driver_list && inactive_driver_list.length > 0)
+          span(style='margin-right:5px;')
+          button#showForm.button-secondary(class="showInactiveDrivers" href="#" data-id= inactive_driver_list.id) Restore
+    div.row
+
+      div#addNewForm.twelve.columns(style="display:none")
+        form#addDriverForm(action="/drivers/new" method="POST")
+          include driver_form.pug
+
+      div#addNewForm.twelve.columns(style="display:none")
+        form#restoreDriverForm(action="/drivers/new" method="POST")
+          include driver_restore.pug
+          
+    div.row
+      div.twelve.columns
+        if (driver_list && driver_list.length > 0)
+          table.u-full-width
+            thead
+              tr
+                th Driver number
+                th Name
+                th Type
+                th Address
+                th Phone number
+                th Email
+                th Modify
+            tbody
+              each driver in driver_list
+                tr
+                  td= driver.driverNumber
+                  td= driver.firstName ? driver.lastName + ", " + driver.firstName : driver.lastName
+                  td= driver.type
+                  td= driver.address
+                  td= driver.phone_number 
+                  td
+                    a(href=`mailto:`+driver.email)= driver.email
+                  td
+                    a(class="editDriver" onclick="event.preventDefault();" href="#" data-id= driver.id)
+                      i.fas.fa-user-edit
+                    span &nbsp;&nbsp;
+                    span &nbsp;&nbsp;
+                    a(href="/drivers/delete/" + driver.id)
+                      i.fas.fa-trash-alt
+        else
+          div No drivers
+
+  script(type="text/javascript").
+
+    $(function(){
+      
+        $("#showForm").on("click", function(){
+            var $addNewForm = $("#addNewForm");
+            if($addNewForm.is(":hidden"))
+                $addNewForm.slideDown();
+            else
+                $addNewForm.slideUp();
+        });
+
+        $(document).on("click", ".editDriver", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/drivers/edit/"+id,function(resp){
+            var form = $("<form/>").attr("id","editDriverForm").attr("method","POST").attr("action","/drivers/update").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $(document).on("click", ".showInactiveDrivers", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/drivers/showInactiveDrivers/"+id,function(resp){
+            var form = $("<form/>").attr("id","restoreDriverForm").attr("method","POST").attr("action","/driver/restore").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $("input[type=checkbox]").on("click", function(){
+            $(this).parent().toggleClass("isSelected");
+            var count = $(this).parents('tr').find('input[type=checkbox]:checked').length;
+            $(this).parents('tr').find('span.count').text(count);
+        });
+
+        $(document).on("click", ".cancel", function () {
+            $(".popup").remove();
+        });
+    });

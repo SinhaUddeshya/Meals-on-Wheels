@@ -1,0 +1,170 @@
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.twelve.columns
+        button#showForm.button-primary Add new
+        if (inactive_customer_list && inactive_customer_list.length > 0)
+            span(style='margin-right:5px;')
+            button#showForm.button-secondary(class="showInactiveCustomers" href="#" data-id= inactive_customer_list.id) Restore
+    div.row
+
+      div#addNewForm.twelve.columns(style="display:none")
+        form#addCustomerForm(action="/customers/new" method="POST")
+          include customer_form.pug
+
+      div#addNewForm.twelve.columns(style="display:none")
+        form#restoreCustomerForm(action="/customers/new" method="POST")
+          include customer_restore.pug
+          
+    div.row
+      div.twelve.columns
+        if (customer_list && customer_list.length > 0)
+          table.u-full-width
+            thead
+              tr
+                th Customer ID
+                th Title
+                th Name
+                th Phone number
+                th Email
+                th Restrictions
+                th Modify
+            tbody
+              each customer in customer_list
+                tr
+                  td= customer.customerNumber
+                  td= customer.title
+                  td= customer.firstName ? customer.lastName + ", " + customer.firstName : customer.lastName
+                  td= customer.phone_number
+                  td
+                    a(href=`mailto:`+customer.email)= customer.email
+                  td
+                    if customer.type
+                      if customer.type.indexOf('vegetarian') != -1
+                        i.icofont.icofont-broccoli(style="font-size:2rem;color:green" title="Vegetarian")
+                      if customer.type.indexOf('alternative') != -1
+                        i.icofont.icofont-direction-sign(style="font-size:2rem" title="Alternative meal")
+                    if customer.options
+                      if customer.options.indexOf('lactose') != -1 || customer.options.indexOf('dairy') != -1
+                        i.icofont.icofont-milk(style="font-size:2rem;color:firebrick" title="Lactose intolerant or dairy free")
+                      if customer.options.indexOf('diabetic') != -1
+                        i.icofont.icofont-candy(style="font-size:2rem;color:firebrick" title="Diabetic")
+                      if customer.options.indexOf('puree') != -1
+                        i.icofont.icofont-sof-drinks(style="font-size:2rem;color:firebrick" title="Puree meal/meat")
+                  td
+                    a(class="editCustomer" onclick="event.preventDefault();" href="#" data-id= customer.id) 
+                      i.fas.fa-user-edit
+                    span &nbsp;&nbsp;
+                    span &nbsp;&nbsp;
+                    a(href="/customers/delete/" + customer.id)
+                      i.fas.fa-trash-alt
+        else
+          div No customers
+
+  script(type="text/javascript").
+
+    $(function(){
+
+        var lat, lng = "";
+        function split( val ) {
+          return val.split( /,\s*/ );
+        }
+
+        function extractLast( term ) {
+          return split( term ).pop();
+        }
+
+        $("#showForm").on("click", function(){
+            var $addNewForm = $("#addNewForm");
+            if($addNewForm.is(":hidden"))
+                $addNewForm.slideDown();
+            else
+                $addNewForm.slideUp();
+        });
+
+        $(document).on("click",".ms-options input[type=checkbox]", function(){
+            var count = $(this).parents('.ms-options').find('input[type=checkbox]:checked').length;
+            $(this).parents('tr').find('span.count').text(count);
+        });
+
+        $(document).on("click","input[type=radio]", function () {
+            var name = $(this).attr("name");
+            $("input[name=" + name + "]").parents('label').removeClass("isSelected");
+            $(this).parent().toggleClass("isSelected");
+        });
+
+        $('select[multiple]').multiselect({
+            columns  : 3
+        });
+
+        $("#addressInput").autocomplete({
+          source: function(req,res){
+            $.post("/customers/addresses", { term: req.term }, function(data){
+                var addresses = [];
+                $.each(data, function(i,e){
+                  addresses.push({label:e["address"], value:e["lat"]+","+e["lng"]});
+                });
+                res(addresses);
+            });
+          },
+          search: function() {
+            // custom minLength
+            $("span.icofont-check-circled").remove();
+            $("input[name=lat]").val("");
+            $("input[name=lng]").val("");
+            var term = extractLast( this.value );
+            if ( term.length < 3 ) {
+              return false;
+            }
+          },
+          select: function(event, ui) {
+            event.preventDefault();
+            $(event.target).val(ui.item.label);
+            var span = $("<span></span>").addClass("icofont icofont-check-circled positionAbsolute");
+            $(event.target).parent(".six.columns").append(span);
+            var coords = ui.item.value.split(",");
+            $("input[name=lat]").val(coords[0]);
+            $("input[name=lng]").val(coords[1]);
+          }
+        });
+
+        $(document).on("click", ".editCustomer", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/customers/edit/"+id,function(resp){
+            var form = $("<form/>").attr("id","editCustomerForm").attr("method","POST").attr("action","/customers/update").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $(document).on("click", ".showInactiveCustomers", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/customers/showInactiveCustomers/"+id,function(resp){
+            var form = $("<form/>").attr("id","restoreCustomerForm").attr("method","POST").attr("action","/customers/restore").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $(document).on("click", ".cancel", function () {
+            $(".popup").remove();
+        });
+
+        /*$('.deleteCustomer').click(function(e)
+        {
+            
+            $.post('/customers/delete',customer.id);
+            e.preventDefault();
+        });*/
+    });

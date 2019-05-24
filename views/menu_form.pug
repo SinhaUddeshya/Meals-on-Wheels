@@ -1,0 +1,81 @@
+if (menu)
+    h1= "Edit menu item #" + menu[0].id
+    div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+    input(type="hidden" name="id" value=menu[0].id)
+
+div.row
+    div.two.columns
+        - var days = moment.weekdays();
+        label(for="dayInput") Day
+        select#dayInput.u-full-width(name="day" required)
+            for day in days
+                option(value= day)= day   
+
+    div.two.columns
+        label(for="weekInput") Week number
+        input#weekInput.u-full-width(type="text" name="week" required  value=menu ? menu[0].week : "")
+
+div.row
+    div.four.columns
+        label(for="meatSelect") Meat
+        select#meatSelect.u-full-width(name="meat" required)
+            for item in food_list
+                if item.type == 'Meat'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+    div.four.columns
+        label(for="alternativeSelect") Alternative
+        select#alternativeSelect.u-full-width(name="alternative" required)
+            for item in food_list
+                if item.type == 'Meat'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+    div.four.columns
+        label(for="vegetarianSelect") Vegetarian
+        select#vegetarianSelect.u-full-width(name="vegetarian" required)
+            for item in food_list
+                if item.type == 'Vegetarian'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+div.row
+    div.four.columns
+        label(for="veg1Select") Vegetable 1
+        select#veg1Select.u-full-width(name="vegetable" required)
+            for item in food_list
+                if item.type == 'Vegetable'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+    div.four.columns
+        label(for="veg2Select") Vegetable 2
+        select#veg2Select.u-full-width(name="vegetable" required)
+            for item in food_list
+                if item.type == 'Vegetable'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+    div.four.columns
+        label(for="veg3Select") Vegetable 3
+        select#veg3Select.u-full-width(name="vegetable" required)
+            for item in food_list
+                if item.type == 'Vegetable'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+div.row
+    div.four.columns
+        label(for="dessertSelect") Dessert
+        select#dessertSelect.u-full-width(name="dessert" required)
+            for item in food_list
+                if item.type == 'Dessert'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+    div.four.columns
+        label(for="soupSelect") Soup
+        select#dessertSelect.u-full-width(name="soup" required)
+            for item in food_list
+                if item.type == 'Soup'
+                option(value= item.name data-ingredients=item.ingredients)= item.name
+
+div.row
+    div.twelve.columns
+        input(type="submit")
+        if (menu)
+            button.cancel(type="button") Cancel

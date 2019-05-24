@@ -1,0 +1,130 @@
+- var mealRestrictions = ["extra veggies", "cut meat", "puree", "gluten free", "dairy free", "diabetic" ];
+- var dishTypes = ["tin foil", "plate"];
+- var serveTypes = ["frozen"];
+- var sizeOptions = ["small", "medium", "large", "large + 2 desserts" ];
+- var typeOptions = ["standard", "alternative", "vegetarian" ];
+
+//- Mixin for a row
+mixin row(name)
+  - var days = moment.weekdays();
+  tr
+    td= name
+    td(style="width:60%")
+      select.u-full-width(multiple name=name)
+        for day in days
+          option(value= day selected=customer && customer[0][day] ? customer[0][day].indexOf(name) != -1 : false)= day
+    td
+      span.count 0
+      span= ' days'
+
+input(type="hidden" name="lat" value=customer ? customer[0].lat : "")
+input(type="hidden" name="lng" value=customer ? customer[0].lng : "")
+
+if (customer)
+  h1= "Edit customer #" + customer[0].id
+  div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+  input(type="hidden" name="id" value=customer[0].id)
+
+div.row
+    div.one.columns
+        label(for="customerNumberInput") Number
+        input#customerNumberInput.u-full-width(type="text" name="customerNumber" required value=customer ? customer[0].customerNumber : "")
+
+    div.one.columns
+        label(for="titleInput") Title
+        input#titleInput.u-full-width(type="text" name="title" required value=customer ? customer[0].title : "")
+
+    div.three.columns
+        label(for="lastNameInput") Last name
+        input#lastNameInput.u-full-width(type="text" name="lastName" required value=customer ? customer[0].lastName : "")
+
+    div.three.columns
+        label(for="firstNameInput") First name
+        input#firstNameInput.u-full-width(type="text" name="firstName" required value=customer ? customer[0].firstName : "")
+
+    div.four.columns
+        label(for="emailInput") Email
+        input(class="u-full-width" type="email" id="emailInput" name="email" value=customer ? customer[0].email : "")
+div.row
+    div.six.columns
+        label(for="phone_numberInput") Phone Number
+        input#phone_numberInput.u-full-width(type="text" name="phone_number" required value=customer ? customer[0].phone_number : "")
+
+    div.six.columns(style="position:relative")
+        label(for="addressInput") Address
+        input#addressInput.u-full-width(type="text" name="address" required value=customer ? customer[0].address : "")
+div.row
+    div.twelve.columns(style="position:relative")
+        label(for="notesInput") Notes
+        textarea#notesInput.u-full-width(name="notes")= customer ? customer[0].notes : ""
+
+div.row
+    div.six.columns(style="position:relative")
+
+        h5 Dish types
+        div.center
+            for dishType, index in dishTypes
+                label.radio(name="type" style="width:20%" class=customer && customer[0].type == dishType ? "isSelected" : "")= dishType
+                  input(type="radio" name="type" value= dishType checked=customer ? customer[0].type == dishType : false)
+
+        h5 Serve options
+        div.center
+            for serveType, index in serveTypes
+                label.radio(name="serve" style="width:20%" class=customer && customer[0].serve == serveType ? "isSelected" : "")= serveType
+                  input(type="radio" name="serve" value= serveType checked=customer ? customer[0].serve == serveType : false)
+                  
+        h5 Meal days
+        table.u-full-width.customer_days
+            tbody
+                +row('Meal')
+                +row('Dessert')
+                +row('Soup')
+                +row('Sandwiches')
+                +row('Fruit')
+                +row('Baking')
+                +row('Soup')
+
+    div.six.columns(style="position:relative")
+        h5 Restrictions
+        div(style="font-weight:600") Meal size
+        div.center_flex
+            for size, index in sizeOptions
+                label.radio(name="size" style="width:20%" class=customer && customer[0].size == size ? "isSelected" : "")= size
+                  input(type="radio" name="size" value= size checked=customer ? customer[0].size == size : false)
+
+        div.select_heading Meal type
+        div.center_flex
+            for type, index in typeOptions
+                label.radio(name="type" style="width:20%" class=customer && customer[0].type == type ? "isSelected" : "")= type
+                  input(type="radio" name="type" value= type checked=customer ? customer[0].type == type : false)
+        br
+        div.select_heading Meal options
+        select(multiple name="options")
+            for meal, index in mealRestrictions
+                option(value= meal selected=customer && customer[0].options ? customer[0].options.indexOf(meal) != -1 : false)= meal
+
+        div.select_heading Meats
+        select(multiple name="meat")
+            for meat, index in meat_list
+                option(value= meat.name selected=customer && customer[0].meat ? customer[0].meat.indexOf(meat.name) != -1 : false)= "no " + meat.name
+
+        div.select_heading Vegetables
+        select(multiple name="vegetables")
+            for veg, index in veg_list
+                option(value= veg.name selected=customer && customer[0].vegetables ? customer[0].vegetables.indexOf(veg.name) != -1 : false)= "no " + veg.name
+
+        div.select_heading Fruit
+            select(multiple name="fruit")
+                for fruit, index in fruit_list
+                    option(value= fruit.name selected=customer && customer[0].fruit ? customer[0].fruit.indexOf(fruit.name) != -1 : false)= "no " + fruit.name
+
+        div.select_heading Sandwiches
+        select(multiple name="sandwiches")
+            for sand, index in sandwich_list
+                option(value= sand.name selected=customer && customer[0].sandwiches ? customer[0].sandwiches.indexOf(sand.name) != -1 : false)= "no " + sand.name
+
+div.row
+    div.twelve.columns
+        input(type="submit")
+        if (customer)
+            button.cancel(type="button") Cancel

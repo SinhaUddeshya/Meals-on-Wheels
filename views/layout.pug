@@ -1,0 +1,41 @@
+doctype html
+html
+  head
+    title= title
+    script(src='https://code.jquery.com/jquery-3.2.1.min.js' integrity='sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=' crossorigin='anonymous')
+    script(src='/javascript/jQuery-MultiSelect-master/jquery.multiselect.js')
+    script(src='/javascript/jquery-ui-1.12.1.custom/jquery-ui.min.js')
+
+    link(rel='stylesheet', href='/stylesheets/icofont/css/icofont.css')
+    link(rel='stylesheet', href='/stylesheets/normalize.css')
+    link(rel='stylesheet', href='/stylesheets/skeleton.css')
+    link(rel='stylesheet', href='/javascript/pikaday/css/pikaday.css')
+    link(rel='stylesheet', href='/stylesheets/pikaday-skeleton.css')
+    link(rel='stylesheet', href='/javascript/jQuery-MultiSelect-master/jquery.multiselect.css')
+    link(rel='stylesheet', href='/javascript/jquery-ui-1.12.1.custom/jquery-ui.min.css')
+    link(rel='stylesheet', href='https://use.fontawesome.com/releases/v5.0.13/css/all.css', integrity='sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp', crossorigin='anonymous')
+
+    link(rel='stylesheet' href='https://unpkg.com/leaflet@1.2.0/dist/leaflet.css')
+    script(src='https://unpkg.com/leaflet@1.2.0/dist/leaflet.js')
+  body
+
+    header.container
+      ul
+        li
+          a.button(href="/") Home
+        li
+          a.button(href="/customers") Customers
+        li
+          a.button(href="/drivers") Drivers
+        li
+          a.button(href="/routes") Routes
+        li
+          a.button(href="/menu") Menu
+        li
+          a.button(href="/settings") Settings
+
+    div.container
+      div.row
+        div.twelve.columns
+          h1= title
+    block content

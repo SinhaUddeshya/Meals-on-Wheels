@@ -1,0 +1,181 @@
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.nine.columns
+        h3 Menu item
+        button#showForm-Menu.button-primary Add new
+
+        div.row
+          - var types = ["Meat","Vegetable","Dessert","Vegetarian"]
+          div#addNewForm-Menu.twelve.columns(style="display:none")
+
+            form#addMenuItem(action="/menu/new" method="POST")
+              include menu_form.pug
+
+      div.three.columns
+        h3 Food item
+        button#showForm-Food.button-primary Add new
+
+        div.row
+          div#addNewForm-Food.twelve.columns(style="display:none")
+
+            form#addFoodItem(action="/menu/food/new" method="POST")
+              div.row
+                div.twelve.columns
+                  label(for="foodNameInput") Name
+                  input#foodNameInput.u-full-width(type="text" name="name" required)
+
+                div.twelve.columns
+                  label(for="foodTypeSelect") Type
+                  select#foodTypeSelect.u-full-width(name="type" required)
+                    for type in types
+                      option(value= type)= type
+
+                div.twelve.columns
+                  label(for="ingredientSelect") Ingredients
+                  select#ingredientSelect.u-full-width(name="ingredients" multiple)
+                    for ingredient in ingredient_list
+                      option(value= ingredient.name)= ingredient.name
+
+                div.twelve.columns
+                  input(type="submit")
+
+    div.row
+      div.twelve.columns
+        h3 Full menu
+    div.row
+      div.three.columns
+        label(for="datepicker") Menu weeks start
+        if weekStarts
+          input#datepicker(type="text" value= weekStarts)
+        else
+          input#datepicker(type="text")
+      div.nine.columns &nbsp;
+
+    div.row
+      div.twelve.columns
+       if (menu_list && menu_list.length > 0)
+        table.u-full-width
+          thead
+            tr
+              th Week
+              th Day
+              th Date
+              th Meat/Main
+              th Sides/Vegetables
+              th Dessert
+              th Alternative
+              th Vegetarian
+              th
+          tbody
+            each menu in menu_list
+              tr
+                td= menu.week
+                td= menu.day
+                td= moment(weekStarts, "D MMM YYYY").add(moment.weekdays().indexOf(menu.day)+((menu.week-1)*7),'days').format("D MMM YYYY")
+                td= menu.meat
+                td= menu.vegetable.replace(/,/g, ", ")
+                td= menu.dessert
+                td= menu.alternative
+                td= menu.vegetarian
+                td
+                    //-a(class="editMenu" onclick="event.preventDefault();" href="#" data-id= menu.id)
+                    i.fas.fa-edit
+                    span &nbsp;&nbsp;
+                    span &nbsp;&nbsp;
+                    a(href="/menu/delete/" + menu.id)
+                      i.fas.fa-trash-alt
+
+  script(src="/javascript/moment/moment.js")
+  script(src="/javascript/pikaday/pikaday.js")
+  script(type="text/javascript").
+
+    $(function(){
+
+        var picker = new Pikaday({
+          disableDayFn: function(date){
+                // Disable all days except Sunday
+                return (date.getDay() != 0);
+          },
+          format: 'D MMM YYYY',
+          field: document.getElementById('datepicker'),
+          onSelect: function(){
+            $.post("/settings/new", {weekStarts:this.getMoment().format('D MMM YYYY')}, function(response){
+
+            });
+          }
+        });
+
+        $("form#addMenuItem").on("submit", function(e){
+          //e.preventDefault();
+          //e.stopImmediatePropagation();
+          var self = $(this);
+          console.log(self.find("select").length);
+          var ingredients = [];
+          $.each(self.find("select"),function(){
+            var select = $(this).find("option:selected");
+            console.log(select);
+            var ingredient = select.data("ingredients");
+            console.log("ingredients",ingredient);
+            if(ingredient) {
+              ingredient = ingredient.split(",");
+              ingredient.forEach(function (item) {
+                if (ingredients.indexOf(item) == -1)
+                  ingredients.push(item);
+              });
+            }
+          });
+          console.log(ingredients);
+          $("input[name=ingredients]").val(ingredients.toString());
+        });
+
+        $("#showForm-Menu, #showForm-Food").on("click", function(){
+            var type = $(this).attr('id').split("-")[1];
+            var $addNewForm = $("#addNewForm-"+type);
+
+            type == "Food" ? $("#addNewForm-Menu").slideUp() : $("#addNewForm-Food").slideUp();
+
+            if($addNewForm.is(":hidden"))
+                $addNewForm.slideDown();
+            else
+                $addNewForm.slideUp();
+        });
+
+        $("#showForm").on("click", function(){
+            var $addNewForm = $("#addNewForm");
+            if($addNewForm.is(":hidden"))
+                $addNewForm.slideDown();
+            else
+                $addNewForm.slideUp();
+        });
+
+        $(document).on("click", ".editMenu", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/menu/edit/"+id,function(resp){
+            var form = $("<form/>").attr("id","editMenuForm").attr("method","POST").attr("action","/menu/update").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $("input[type=checkbox]").on("click", function(){
+            $(this).parent().toggleClass("isSelected");
+            var count = $(this).parents('tr').find('input[type=checkbox]:checked').length;
+            $(this).parents('tr').find('span.count').text(count);
+        });
+
+        $('select[multiple]').multiselect({
+            columns: 3
+        });
+
+        $(document).on("click", ".cancel", function () {
+            $(".popup").remove();
+        });
+    });

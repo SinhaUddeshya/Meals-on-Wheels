@@ -1,0 +1,167 @@
+extends layout
+
+block content
+
+  div.container
+    - var today = moment().format('dddd');
+    div.row
+      div.nine.columns
+        h3= moment().format('dddd, Do MMMM YYYY') + " (Week " + currWeek + ")"
+
+        div.row
+          div.twelve.columns
+            h5= "Today's meals "
+              a#showMore(href="#") click for details
+            if today_customer
+              - var tally = {};
+              div#details.row(style="display:none")
+                div.twelve.columns
+                  table.u-full-width
+                    thead
+                      th Name
+                      th Address
+                      th Meals
+                      th Restrictions
+                      th
+
+                    tbody
+                      for customer in today_customer
+                        tr
+                          td= customer.firstName + " " + customer.lastName
+                          td= customer.address
+                          td
+                            if customer[today].indexOf('Dessert') != -1
+                              i.icofont.icofont-cup-cake(style="font-size:2rem;" title="Dessert")
+                            if customer[today].indexOf('Soup') != -1
+                              i.icofont.icofont-soup-bowl(style="font-size:2rem;" title="Soup")
+                            if customer[today].indexOf('Sandwich') != -1
+                              i.icofont.icofont-sandwich(style="font-size:2rem;" title="Sandwiches")
+                            if customer[today].indexOf('Fruit') != -1
+                              i.icofont.icofont-apple(style="font-size:2rem;" title="Fruit")
+                            if customer[today].indexOf('Baking') != -1
+                              i.icofont.icofont-bread(style="font-size:2rem;" title="Baking")
+                          td
+                            if customer.type
+                              if customer.type.indexOf('vegetarian') != -1
+                                i.icofont.icofont-broccoli(style="font-size:2rem;color:green" title="Vegetarian")
+                              if customer.type.indexOf('alternative') != -1
+                                i.icofont.icofont-direction-sign(style="font-size:2rem" title="Alternative meal")
+                            if customer.options
+                              if customer.options.indexOf('lactose') != -1 || customer.options.indexOf('dairy') != -1
+                                i.icofont.icofont-milk(style="font-size:2rem;color:firebrick" title="Lactose intolerant or dairy free")
+                              if customer.options.indexOf('diabetic') != -1
+                                i.icofont.icofont-candy(style="font-size:2rem;color:firebrick" title="Diabetic")
+                              if customer.options.indexOf('puree') != -1
+                                i.icofont.icofont-sof-drinks(style="font-size:2rem;color:firebrick" title="Puree meal/meat")
+                          td
+                            for m in menu
+                              if m.day == today
+                                if m.ingredients
+                                  - var ingredients = m.ingredients.split(',')
+                                  if customer.meat
+                                    - var customerMeat = customer.meat.split(',')
+                                    for item in customerMeat
+                                      if ingredients && ingredients.indexOf(item) != -1
+                                        =item
+
+
+                        - var arr = customer[today].split(",");
+
+                        if customer.type
+                          if (customer[today].indexOf('Meal') != -1) && customer.type.indexOf('standard') != -1
+                            - tally['Standard'] = (tally['Standard']||0) + 1;
+                          if (customer[today].indexOf('Meal') != -1) && customer.type.indexOf('vegetarian') != -1
+                            - tally['Vegetarian'] = (tally['Vegetarian']||0) + 1;
+                          if (customer[today].indexOf('Meal') != -1) && customer.type.indexOf('alternative') != -1
+                            - tally['Alternative'] = (tally['Alternative']||0) + 1;
+
+                        for a in arr
+                          - tally[a] = (tally[a]||0) + 1;
+
+              div.row
+                div.twelve.columns
+                  ul
+                    li
+                      i.icofont.icofont-restaurant(style="font-size:2rem;padding-right:1rem" title="Meal")
+                      ="Total meals : " + tally["Meal"]
+                      ul
+                        li
+                          i.icofont.icofont-restaurant(style="font-size:2rem;padding-right:1rem" title="Vegetarian")
+                          ="Standard : " + (tally["Standard"] ? tally["Standard"] : 0)
+                        li
+                          i.icofont.icofont-broccoli(style="font-size:2rem;padding-right:1rem" title="Vegetarian")
+                          ="Vegetarian : " + (tally["Vegetarian"] ? tally["Vegetarian"] : 0)
+                        li
+                          i.icofont.icofont-direction-sign(style="font-size:2rem;padding-right:1rem" title="Alternative")
+                          ="Alternative : " + (tally["Alternative"] ? tally["Alternative"] : 0)
+                    li
+                      i.icofont.icofont-soup-bowl(style="font-size:2rem;padding-right:1rem" title="Soup")
+                      ="Soup : " + (tally["Soup"] ? tally["Soup"] : 0)
+                    li
+                      i.icofont.icofont-sandwich(style="font-size:2rem;padding-right:1rem" title="Sandwich")
+                      ="Sandwich : " + (tally["Sandwich"] ? tally["Sandwich"] : 0)
+                    li
+                      i.icofont.icofont-cup-cake(style="font-size:2rem;padding-right:1rem" title="Dessert")
+                      ="Dessert : " + (tally["Dessert"] ? tally["Dessert"] : 0)
+                    li
+                      i.icofont.icofont-apple(style="font-size:2rem;padding-right:1rem" title="Fruit")
+                      ="Fruit : " + (tally["Fruit"] ? tally["Fruit"] : 0)
+                    li
+                      i.icofont.icofont-bread(style="font-size:2rem;padding-right:1rem" title="Baking")
+                      ="Baking : " + (tally["Baking"] ? tally["Baking"] : 0)
+
+
+
+      div.three.columns
+        div.row
+          div.twelve.columns
+            if menu
+              for m in menu
+                if m.day == today
+                  div.card
+                    h5
+                      i(style="font-size:2rem;padding-right:1rem").icofont.icofont-fork-and-knife
+                      span Today's menu
+                    div(style="display:flex")
+                      i.icofont.icofont-steak(style="font-size:2rem;padding-right:1rem" title="Meat/Main")
+                      span= m.meat
+                    div(style="display:flex")
+                      i.icofont.icofont-french-fries(style="font-size:2rem;padding-right:1rem" title="Sides/Vegetables")
+                      span= m.vegetable.replace(/,/g, ", ")
+                    div(style="display:flex")
+                      i.icofont.icofont-cup-cake(style="font-size:2rem;padding-right:1rem" title="Dessert")
+                      span= m.dessert
+                    div(style="display:flex;font-style:italic;margin-top:1rem;padding-top:1rem;border-top:1px solid #ccc")
+                      i.icofont.icofont-direction-sign(style="font-size:2rem;padding-right:1rem" title="Alternative")
+                      span= m.alternative
+                    div(style="display:flex;font-style:italic")
+                      i.icofont.icofont-broccoli(style="font-size:2rem;padding-right:1rem" title="Vegetarian")
+                      span= m.vegetarian
+
+        div.row(style="padding-top:2rem")
+          div.twelve.columns
+            h5 System stats
+            div.row
+              div.twelve.columns
+                ul
+                  li
+                    a(href="/customers")= customer_list.length + ' customers'
+                  li
+                    a(href="/drivers")= driver_list.length + ' drivers'
+
+  script(type="text/javascript").
+    $(function(){
+        $("#showMore").on("click", function(){
+            var $details = $("#details");
+            if($details.is(":hidden"))
+                $details.slideDown();
+            else
+                $details.slideUp();
+        });
+
+        $("input[type=checkbox]").on("click", function(){
+            $(this).parent().toggleClass("isSelected");
+            var count = $(this).parents('tr').find('input[type=checkbox]:checked').length;
+            $(this).parents('tr').find('span.count').text(count);
+        });
+    });

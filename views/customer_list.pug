@@ -1,0 +1,6 @@
+for customer in customer_list
+  li
+    label.checkbox.customer(for="customer" + customer.id data-lat=customer.lat data-lng=customer.lng data-customer=customer.id)
+      != (customer.firstName ? customer.lastName + ", " + customer.firstName : customer.lastName) + "<br/>"
+      = customer.address
+      input.u-full-width(id="customer"+customer.id type="checkbox" name="customer" value=customer.id)

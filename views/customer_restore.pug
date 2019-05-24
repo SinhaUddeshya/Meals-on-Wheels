@@ -1,0 +1,28 @@
+if (inactive_customer_list && inactive_customer_list.length > 0)
+  h1= "Restore inactive customers"
+  div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+  input(type="hidden" name="id" value=inactive_customer_list[0].id)
+
+div.row
+      div.twelve.columns
+        if (inactive_customer_list && inactive_customer_list.length > 0)
+          table.u-full-width
+            thead
+              tr
+                th Customer ID
+                th Title
+                th Name
+                th Phone number
+                th Restore
+            tbody
+              each customer in inactive_customer_list
+                tr
+                  td= customer.customerNumber
+                  td= customer.title
+                  td= customer.lastName + " " + customer.firstName 
+                  td= customer.phone_number
+                  td 
+                    a(href="/customers/restore/" + customer.id)
+                      i.fas.fa-redo
+        else
+          div No inactive customers

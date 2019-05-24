@@ -1,0 +1,37 @@
+- var days = moment.weekdays();
+
+if (route)
+    h1= "Edit route #" + route[0].id
+    div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+    input(type="hidden" name="id" value=route[0].id)
+
+div.row
+    div.six.columns
+        label(for="routeNameInput") Route name
+        input#routeNameInput.u-full-width(type="text" name="name" required value=route ? route[0].name : "")
+
+    div.three.columns
+        label(for="daySelect") Day
+        select#daySelect.u-full-width(name="day" required value=route ? route[0].day : "")
+            for day in days
+                option(value= day)= day
+
+    div.three.columns
+        label(for="driverSelect") Driver
+        select#driverSelect.u-full-width(name="driver" required)
+            for driver in driver_list
+                option(value= driver.id)=  driver.lastName + " " + driver.firstName
+
+div.row(style="margin-bottom: 2rem;position:relative")
+    div.nine.columns
+        div#mapid
+    div.three.columns(style="top: 0;bottom: 0;position: absolute;right: 0;overflow-y: scroll;")
+        h5 Customers
+        ul#customer_list
+            include customer_list.pug
+
+div.row
+    div.twelve.columns
+        input(type="submit")
+        if (route)
+            button.cancel(type="button") Cancel

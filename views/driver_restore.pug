@@ -1,0 +1,33 @@
+if (inactive_driver_list && inactive_driver_list.length > 0)
+  h1= "Restore inactive drivers"
+  div.cancel(style="position:absolute;top:2rem;right:2rem;cursor:pointer;font-weight:bold;font-size:2rem") x
+  input(type="hidden" name="id" value=inactive_driver_list[0].id)
+    
+div.row
+      div.twelve.columns
+        if (inactive_driver_list && inactive_driver_list.length > 0)
+          table.u-full-width
+            thead
+              tr
+                th Driver number
+                th Name
+                th Type
+                th Address
+                th Phone number
+                th Email
+                th Modify
+            tbody
+              each driver in inactive_driver_list
+                tr
+                  td= driver.driverNumber
+                  td= driver.lastName + " " + driver.firstName
+                  td= driver.type
+                  td= driver.address
+                  td= driver.phone_number
+                  td 
+                    a(href=`mailto:`+driver.email)= driver.email
+                  td 
+                    a(href="/drivers/restore/" + driver.id)
+                      i.fas.fa-redo
+        else
+          div No inactive drivers

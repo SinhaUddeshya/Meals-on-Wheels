@@ -1,0 +1,171 @@
+extends layout
+
+block content
+
+  div.container
+    div.row
+      div.twelve.columns
+        button#showForm.button-primary Add new
+
+    div.row
+      div#addNewForm.twelve.columns(style="display:none")
+        //- var days = moment.weekdays()
+        form#addRouteForm(action="/routes/new" method="POST")
+          include routes_form.pug
+
+    div.row
+      div.twelve.columns
+        if (route_list && route_list.length > 0)
+          table.u-full-width
+            thead
+              tr
+                th Name
+                th Day
+                th Driver
+                th Customers
+                th Modify
+            tbody
+              each route in route_list
+                tr
+                  td= route.name
+                  td= route.day
+                  td= route.driver
+                  td= route.customer.split(",").length
+                  td
+                    //-a(class="editRoute" onclick="event.preventDefault();" href="#" data-id= route.id)
+                    i.fas.fa-edit
+                    span &nbsp;&nbsp;
+                    span &nbsp;&nbsp;
+                    a(href="/routes/delete/" + route.id)
+                      i.fas.fa-trash-alt
+        else
+          div No routes
+
+  script(type="text/javascript").
+
+    $(function(){
+        var currMarker = null;
+
+        $("#daySelect").on("change", function(){
+            var day = $(this).val();
+            $.post("/customers/day",{day:day},function(resp){
+                $("#customer_list").empty().append(resp);
+            });
+        });
+
+        var mymap = L.map('mapid',{
+            center: L.latLng(-45.8788, 170.5028),
+            zoom:15,
+            worldCopyJump :true
+        });
+
+        mymap.on('mouseup', () => {
+          mymap.dragging.enable();
+          mymap.removeEventListener('mousemove');
+          var latlng = currMarker._latlng;
+          $.post("/customers/update",{id:currMarker.customer,lat:latlng.lat, lng:latlng.lng}, function(){
+            currMarker = null;
+          });
+        });
+
+        var markerGroup = L.layerGroup().addTo(mymap);
+
+        var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        	maxZoom: 19,
+        	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(mymap);
+
+        $("#showForm").on("click", function(){
+            var $addNewForm = $("#addNewForm");
+            if($addNewForm.is(":hidden")){
+                $("#addNewForm").slideDown(function(){
+                    mymap.invalidateSize();
+                });
+            }
+            else
+                $("#addNewForm").slideUp();
+        });
+
+        $(document).on("click","label.customer", function(evt){
+          if( evt.target.tagName === "LABEL" ) {
+              var self = $(this);
+              var lat = self.data("lat");
+              var lng = self.data("lng");
+              var id = self.data("id");
+              var customer = self.data("customer");
+              if(self.hasClass('isSelected'))
+              {
+                self.removeClass("isSelected");
+                if(id)
+                {
+                  markerGroup.removeLayer(id);
+                  self.data("id","");
+                }
+              }
+              else
+              {
+                self.addClass("isSelected");
+                //var marker = L.marker([lat, lng]).addTo(markerGroup);
+                var marker;
+                if(lat && lng)
+                {
+                  marker = L.circleMarker([lat,lng], {
+                    color: 'blue',
+                    fillColor: '#03f',
+                    fillOpacity: 0.5,
+                    radius: 10
+                  });
+                }
+                else
+                {
+                  marker = L.circleMarker([-45.874413300, 170.503119400], {
+                    color: 'red',
+                    fillColor: '#f03',
+                    fillOpacity: 0.5,
+                    radius: 10
+                  });
+                }
+
+                marker.customer = customer;
+
+                marker.on('mousedown', function (event) {
+                  //L.DomEvent.stop(event);
+                  currMarker = this;
+                  mymap.dragging.disable();
+                  let {lat: circleStartingLat, lng: circleStartingLng} = marker._latlng;
+                  let {lat: mouseStartingLat, lng: mouseStartingLng} = event.latlng;
+
+                  mymap.on('mousemove', event => {
+                    let {lat: mouseNewLat, lng: mouseNewLng} = event.latlng;
+                    let latDifference = mouseStartingLat - mouseNewLat;
+                    let lngDifference = mouseStartingLng - mouseNewLng;
+
+                    let center = [circleStartingLat-latDifference, circleStartingLng-lngDifference];
+                    marker.setLatLng(center);
+                  });
+                });
+
+                marker.addTo(markerGroup);
+                marker.bindPopup(self.html());
+                self.data("id",marker._leaflet_id);
+              }
+          }
+        });
+
+        $(document).on("click", ".editRoute", function () {
+          var self = $(this);
+          var id = self.data("id");
+          $.get("/routes/edit/"+id,function(resp){
+            var form = $("<form/>").attr("id","editRouteForm").attr("method","POST").attr("action","/routes/update").append(resp);
+            var div = $("<div class='popup'/>").append(form);
+            div.appendTo("body");
+            $('select[multiple]').multiselect({
+              columns: 3
+            });
+          });
+        });
+
+        $(document).on("click", ".cancel", function () {
+            $(".popup").remove();
+        });
+    });
